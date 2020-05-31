@@ -1,3 +1,7 @@
+#ifndef JUGADORS
+#define JUGADORS
+
+
 typedef struct Player{
 		char nombre[20];
 		int exp;
@@ -7,4 +11,3 @@ typedef struct Player{
 void PrintTest(){
 	printf("testn1\n");
 	
-}
