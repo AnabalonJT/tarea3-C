@@ -1,5 +1,4 @@
-#ifndef JUGADORS
-#define JUGADORS
+#include "player.h"
 #include <stdio.h>
 
 typedef struct Player{
@@ -12,4 +11,4 @@ void PrintTest(){
 	printf("testn1\n");
 	
 }
-#endif
+
