@@ -1,0 +1,26 @@
+void interfaz(Carta player, Carta gm, int diceP, int diceGm, int round){
+	printf("\n");
+	printf("  ╔═══════════════════════════════════════════════════╗\n");
+	printf("  ║                      ROUND %d                      ║\n",round);
+	printf("  ╚═══════════════════════════════════════════════════╝\n");
+	printf("\n");
+	printf("  Game Master\n");
+	printf("  ╔════╦═══════════════╗ ╔═══╗   ╔════╦═══════════════╗\n");
+	printf("  ║ %d ║ %s\t\t ║ ║ %d ║   ║ %d ║ %s\t\t ║\n",gm.atk,gm.name,diceGm,player.atk,player.name);
+	printf("  ╠════╩═══════════════╣ ╚═══╝   ╠════╩═══════════════╣\n");
+	printf("  ║                    ║         ║                    ║\n");
+	printf("  ║                    ║         ║                    ║\n");
+	printf("  ║                    ║         ║                    ║\n");
+	printf("  ║                    ║         ║                    ║\n");
+	printf("  ║                    ║         ║                    ║\n");
+	printf("  ║                    ║  0 - 0  ║                    ║\n");
+	printf("  ║                    ║         ║                    ║\n");
+	printf("  ║                    ║         ║                    ║\n");
+	printf("  ║                    ║         ║                    ║\n");
+	printf("  ║                    ║         ║                    ║\n");
+	printf("  ║                    ║         ║                    ║\n");
+	printf("  ║               ╔════╣   ╔═══╗ ║               ╔════╣\n");
+	printf("  ║               ║ %d ║   ║ %d ║ ║               ║ %d ║\n",gm.def, diceP,player.def);
+	printf("  ╚═══════════════╩════╝   ╚═══╝ ╚═══════════════╩════╝\n");
+	printf("                                                Jugador\n");
+}
