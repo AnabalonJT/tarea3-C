@@ -5,4 +5,5 @@ typedef struct Card{
     int atk;
     int def;
 } Card;
+
 #endif
