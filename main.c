@@ -5,103 +5,164 @@
 #include "player.h"
 #include "card.h"
 
-void obtener(int * p_l, int * c_p, FILE * f){
-    *p_l = 0;
-    int larga = 0;
-    *c_p = 0;
-    char buff = fgetc(f);
-    while (buff != EOF){
-        *p_l += 1;
-        if(buff == '\n'){
-            *c_p += 1;
-            if (*p_l > larga){
-                larga = *p_l;
-            }
-            *p_l = 0;
-        }
-        buff = fgetc(f);
-    }
-    *p_l = larga;
-}
-
 int checkSD(int* rolls){
     int sum=0;
     for (int i=0;i<(int)(sizeof(rolls)/sizeof(rolls[0]));i++){
-        sum += rolls[i];
+    	if(rolls[i]>0 && rolls[i]<6) sum += rolls[i];
         if (sum == 15) return 1;
     }
     return 0;
 }
 
-int main (int argc, char* argv[]){
+
+//////ACA
+
+void copyCard(Card original, Card copy){
+	strcpy(copy.name,original.name);
+	copy.def=original.def;
+	copy.atk=original.atk;
+}
+
+char* duel(Card player, Card gm, int dp, int dg){
+	int hitP=(player.atk*dp);
+	int hitG=(gm.atk*dg);
+	player.def-=hitG;
+	gm.def-=hitP;
+	if((player.def<=0 && gm.def<=0) || (player.def>0 && gm.def>0)) return "draw";
+	else if(player.def<=0) return "gm";
+	else if(gm.def<=0) return "player";
+	return "draw";
+}
+
+///HASTA ACA
+
+int main (){
+
+	srand(time(NULL));
     FILE * archivo;
-    int nothing= argc; // son para que no me de error al compilar
-    char* palabra = argv[0];
-    printf("%d\n",nothing);
-    printf("%s\n",palabra);
-    archivo = fopen("cards.txt","r");
-    // para ahorrar memoria obtenemomos la cantidad de palabras y la palabra mas larga
-    int palabra_mas_larga;
-    int cantidad_de_palabras;
-    obtener(&palabra_mas_larga,  &cantidad_de_palabras, archivo);
-    fclose(archivo);
-    
     // ahora creamos nuestro mazo
-    archivo = fopen("cards.txt","r");
-    char mazo[cantidad_de_palabras+1][palabra_mas_larga];
-    char buff_s[palabra_mas_larga];
+    archivo = fopen("cartas.txt","r");
+    Card mazo[30];
+    char * buff=malloc(sizeof(char)*30);
+    char * token;
     int i=0;
-    while(fgets(buff_s,palabra_mas_larga,archivo)!=NULL){
-        strcpy(mazo[i],buff_s);
-        i++;
+    int j=0;
+    printf("debug0\n");
+    while(fgets(buff,15,archivo)!=NULL){
+        printf("debug1\n");
+    	token=strtok(buff," ");
+    	if(j==0) strcpy(mazo[i].name,token);
+    	j++;
+    	while(token!=NULL){
+    		token=strtok(NULL," ");
+    		if(j==1){
+				mazo[i].def=atoi(token);
+				j++;
+    		} 
+    		if(j==2){
+    			mazo[i].atk=atoi(token);
+    			j=0;
+    		} 
+    	}
+    	//printf("%s-%d-%d\n",mazo[i].name,mazo[i].def,mazo[i].atk);
+    	i++;
     }
-    // mazo creado, funcion que nos imprime el total del mazo
-    printf("\n");
+    printf("debug2\n");
     fclose(archivo);
-    for(int j = 0; j<i;j++) printf("%s", mazo[j]);
-    printf("\n");
-    // ahora sacamos 5 aleatorias para el gm y 10 para el jugador que eliga
-    i=0;//vamos contando cuantas sacamos
-    int cartA;
-    int * selecion= NULL;// aqui vamos viendo cuales salen aleatorias podemos hace un mazo[selecion] de ahi, las primeras 5 son gm y las otras las mostramos al jugador
-    for(i=0;i<15;i++){
-        cartA=rand()%30;
-        selecion[i]= cartA;
-        printf("%d\n",cartA);
-    }
-    // generamos mazo mg
-    char mazoMG[6][palabra_mas_larga];
-    for(i=0;i<5;i++){
-        strcpy(mazoMG[i],mazo[selecion[i]]);
-    }
-    // nos imprime la seleccion de nuetras cartas
-    char lectura[palabra_mas_larga];
-    char mazoP[6][palabra_mas_larga];
+    free(buff);
     
-    while(i< 15){
-        strcpy(lectura,mazo[selecion[i]]);
-        printf(" -%d -%s",i, lectura);
-        i++;
+    Card mazoGM[5];
+    for (int k=0; k<5;k++){
+    	int ind=rand()%i;
+    	mazoGM[k]=mazo[ind];	
     }
-    printf("seleccione 5 cartas ingresando su indice");
-    printf("ingrese indice:");
-    int opcion;
-    i=0;// ocupamos varias veces i para reutilizar memoria(supongo)
-    while(i<5){
-        printf("ingrese indice:");
-        scanf("%d", &opcion);
-        i++;
-        // deberiamos comprobar, aqui vamos eliguiendo las que seleccione en  mazoP
-    }
-    srand(time(NULL));
-    int * diceP = NULL;
-    for(int i=0;i<=5;i++){
-        int diceRoll=rand()%6+1;
-        diceP[i]=diceRoll;
-        printf("%d\n",diceRoll);
-    }
-    printf("is SD: %d\n",checkSD(diceP));
     
-    PrintTest();
+    Card preMazo[10];
+    for (int k=0; k<10;k++){
+    	int ind=rand()%i;
+    	preMazo[k]=mazo[ind];	
+    	printf("%d-%s-[%d]-[%d]\n",k,preMazo[k].name,preMazo[k].def,preMazo[k].atk);
+    }
+    
+    printf("debug3\n");
+    ////// DESDE ACA
+    Card mazoJ[5];
+    char * opcion= malloc(sizeof(char)*10);
+    printf("seleccione 5 cartas:");
+    scanf("%s",opcion);
+    // separamos la opcion
+    token=strtok(opcion,",");
+    int op=0;
+    int tok;
+    while (token != NULL){
+        tok=atoi(token);
+        mazoJ[op]=preMazo[tok];
+        token = strtok(NULL, ",");
+        printf("-%s\n",mazoJ[op].name);
+        op++;
+    }
+    free(opcion);
+
+    printf("debug4\n");
+    //Mazo creado post eleccion del jugador.
+    
+    
+    int round=1;
+    int pointsPlayer=0;
+    int pointsGm=0;
+    int dadoPlayer=0;
+    int dadoGm=0;
+    int dadosGm[5];
+    int dadosPlayer[5];
+   	char*  input= malloc(sizeof(char)*3);
+   	char* outcome;
+    
+    while(round<6){
+        printf("debug5\n");
+        Card player;
+        strcpy(player.name," ");
+        player.atk=0;
+        player.def=0;
+        Card gm;
+        strcpy(gm.name," ");
+        gm.atk=0;
+        gm.def=0;
+		for (int k=0;k<5;k++){
+			printf("%d-%s-[%d]-[%d]\n",k+1,mazoJ[k].name,mazoJ[k].def,mazoJ[k].atk);
+		}
+		printf("Seleccione Carta a Jugar");
+        scanf("%s",input);
+		i=atoi(input);
+		copyCard(mazoJ[i],player);
+		copyCard(mazoGM[rand()%5],gm);
+		dadoPlayer=(rand()%6+1);
+		dadosPlayer[round-1]=dadoPlayer;
+		if(checkSD(dadosPlayer)){
+			printf("Player Wins By SD");
+			break;
+		} 
+		dadoGm=(rand()%6+1);
+		dadosGm[round-1]=dadoGm;
+		if(checkSD(dadosGm)){
+			printf("Gm Wins By SD");
+			break;
+		}
+        //funcion interfaz
+        interfaz(player,gm,dadoPlayer,dadoGm,round,pointsPlayer,pointsGm);
+        
+		outcome=duel(player,gm,dadoPlayer,dadoGm);
+		if(strcmp(outcome,"draw")) printf("Duel it's a Drwa");
+		if(strcmp(outcome,"gm")){
+			printf("Game Master wins Duel\n");
+			pointsGm++;
+		}
+		if(strcmp(outcome,"player")){
+			printf("Player wins Duel\n");
+			pointsPlayer++;
+		}
+        round++;
+		
+	}
+    free(input);
 	return 0;
 }

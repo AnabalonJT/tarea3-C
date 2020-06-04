@@ -1,11 +1,7 @@
 #include "player.h"
 #include <stdio.h>
 
-typedef struct Player{
-		char nombre[20];
-		int exp;
-		int level;
-} Player;
+struct Player;
 
 void PrintTest(){
 	printf("testn1\n");
